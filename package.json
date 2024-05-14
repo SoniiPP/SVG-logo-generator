@@ -1,0 +1,18 @@
+{
+  "name": "svg-logo-generator",
+  "version": "1.0.0",
+  "description": "As a freelance web developer , generate a simple logo for my projects",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "inquirer": "^8.2.4"
+  }
+}
