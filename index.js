@@ -1,75 +1,105 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const { Circle, Triangle, Square } = require("./lib/shape");
-const { default: Choices } = require("inquirer/lib/objects/choices");
 
 class Svg {
   constructor() {
     this.textElement = "";
     this.shapeElement = "";
+    this.text = "";
+    this.textColor = "";
   }
 
   render() {
-    return `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg" `;
+    // Complete the SVG markup by including shape and text elements
+    return `<svg width="500" height="400" xmlns="http://www.w3.org/2000/svg">
+      ${this.shapeElement}
+      <text x="150" y="125" font-family="Arial" font-size="60" text-anchor="middle" fill="${this.textColor}">${this.text}</text>
+    </svg>`;
   }
 
   setTextElement(text, color) {
-    this.textElement =
-      'text  x="150" y="125" font-size="60" text-anchor="middle" fill="white"';
+    this.text = text;
+    this.textColor = color;
   }
 
   setShapeElement(shape) {
     this.shapeElement = shape.render();
   }
 }
+
 const questions = [
   {
     type: "input",
     name: "text",
-    message: " Text : Enter up to (3) Characters:",
+    message: "Enter up to (3) Characters:",
   },
-
   {
     type: "input",
-    name: "text-color",
-    message: "Text COLOR: Enter a color keyword (OR a hexadecimal number): ",
+    name: "textColor",
+    message:
+      "Enter a color keyword (or a hexadecimal number) for the text color:",
   },
-
   {
     type: "input",
-    name: "shape",
-    message: " Shape COLOR: Enter a Color keyword(OR a hexadecimal number):",
+    name: "shapeColor",
+    message:
+      "Enter a color keyword (or a hexadecimal number) for the shape color:",
   },
   {
     type: "list",
-    name: "pixel-image",
-    message: "Choose which Pixel Image you would like?",
-    choices: ["Circle", "Shape", "Triangle"],
+    name: "shapeType",
+    message: "Choose which shape you would like:",
+    choices: ["Circle", "Square", "Triangle"],
   },
 ];
 
-// console.log(questions);
 inquirer.prompt(questions).then((answers) => {
   let shape;
-  switch (answers.shape.toLowerCase()) {
+  switch (answers.shapeType.toLowerCase()) {
     case "circle":
-      shape = new Circle(answers.color);
+      shape = new Circle();
       break;
     case "triangle":
-      shape = new Triangle(answers.color);
+      shape = new Triangle();
       break;
     case "square":
-      shape = new Square(answers.color);
+      shape = new Square();
       break;
+    default:
+      console.error("Invalid shape selected.");
+      return; // Exit on error
   }
 
-  //   const svgContent = `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
-  //   ${shape.render()}
-  //   <text x="150" y="150" font-family="Arial" font-size="20" fill="black" text-anchor="middle">${
-  //     answers.text
-  //   }</text>
-  // </svg>`;
+  shape.setColor(answers.shapeColor);
 
-  fs.writeFileSync("examples/logo.svg", Svg);
+  // Create the SVG instance and set elements
+  const svg = new Svg();
+  svg.setTextElement(answers.text, answers.textColor);
+  svg.setShapeElement(shape);
+
+  // Ensure the 'examples' directory exists
+  if (!fs.existsSync("examples")) {
+    fs.mkdirSync("examples");
+  }
+
+  // Write the SVG content to a file
+  fs.writeFileSync("logo.svg", svg.render());
   console.log("Generated logo.svg");
+
+  // Generate example logos for Circle, Triangle, and Square
+  const exampleShapes = [
+    { shape: new Circle(), name: "example_circle.svg" },
+    { shape: new Square(), name: "example_square.svg" },
+    { shape: new Triangle(), name: "example_triangle.svg" },
+  ];
+
+  exampleShapes.forEach(({ shape, name }) => {
+    shape.setColor("green");
+    const exampleSvg = new Svg();
+    exampleSvg.setTextElement("HEY", "White");
+    exampleSvg.setShapeElement(shape);
+    fs.writeFileSync(`./examples/${name}`, exampleSvg.render());
+    console.log(`Generated ${name}`);
+  });
 });
