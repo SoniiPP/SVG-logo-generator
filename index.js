@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const { Circle, Triangle, Square } = require("./lib/shape");
 
+//his Svg class initializes an object with properties for storing SVG text, shape elements, text content, and text color.
 class Svg {
   constructor() {
     this.textElement = "";
